@@ -4,15 +4,22 @@ using System.Collections.Generic;
 [System.Serializable]
 public class WorkData
 {
-    public string description = "";
+    public string workName = "";
     public int workAmount = 0;
 }
 
 public class WorkControl : MonoBehaviour
 {
-    private int _leftWork;
-
+    
     [SerializeField] private List<WorkData> _works;
+
+    
+
+    public int getLeftWork()
+    {
+        return _works.Count;
+    }
+
 
     public List<WorkData> getWorkData()
     {
@@ -28,16 +35,11 @@ public class WorkControl : MonoBehaviour
             return null;
         }
 
-        if (_works[n].description != "" && _works[n].workAmount > 0)
+        if (_works[n].workName != "" && _works[n].workAmount > 0)
         {
             WorkData result = new WorkData();
-            result.description = _works[n].description;
+            result.workName = _works[n].workName;
             result.workAmount = _works[n].workAmount;
-
-            if (_leftWork > 0)
-            {
-                _leftWork -= 1;
-            }
 
             _works.RemoveAt(n);
             return result;
@@ -63,7 +65,7 @@ public class WorkControl : MonoBehaviour
         }
 
 
-        _leftWork = _works.Count;
+        
     }
 
     // Update is called once per frame
