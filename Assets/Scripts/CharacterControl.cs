@@ -138,7 +138,7 @@ public class CharacterControl : MonoBehaviour
                         _characters[_workingCharacters[i].getDataLoc()].setIsWork(true);
                         _characters[_workingCharacters[i].getDataLoc()].plusCompletedWork();
                         assignWork.addCompletedCharacter(_workingCharacters[i].getDataLoc());
-                        ui.beVisible(_workingCharacters[i].getDataLoc());
+                        ui.aintWorkingCharacterUI(_workingCharacters[i].getDataLoc());
                         _workingCharacters.RemoveAt(i);
                     }
                 }

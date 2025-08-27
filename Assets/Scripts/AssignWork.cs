@@ -32,14 +32,15 @@ public class AssignWork : MonoBehaviour
 
     public void addCompletedCharacter(int n)
     {
-        _copyCharacterDataLoc.Insert(n, n);
+        //_copyCharacterDataLoc.Insert(n, n);
+        _copyCharacterDataLoc.Add(n);
     }
 
     public void assignWorkToCharacter()
     {
         WorkData result = workControl.popWork(_chosenWorkNum);
         characterControl.setAssignment(_copyCharacterDataLoc[_chosenCharacterNum], result.workName, result.workAmount);
-        ui.aintVisible(_copyCharacterDataLoc[_chosenCharacterNum]);
+        ui.beWorkingCharacterUI(_copyCharacterDataLoc[_chosenCharacterNum]);
         _copyCharacterDataLoc.RemoveAt(_chosenCharacterNum);
         //Debug.Log(_chosenCharacterNum + " " + _copyCharacterDataLoc[_chosenCharacterNum]);
     }
@@ -54,7 +55,12 @@ public class AssignWork : MonoBehaviour
             case StateType.characterChosen:
                 assignWorkToCharacter();
                 _state = StateType.nothingChosen;
-                _chosenCharacterNum = 0;
+                
+                if (_chosenCharacterNum == _copyCharacterDataLoc.Count)
+                {
+                    _chosenCharacterNum = 0;
+                }
+                
                 _chosenWorkNum = 0;
                 break;
             default:
@@ -84,9 +90,11 @@ public class AssignWork : MonoBehaviour
             if(_chosenCharacterNum < _copyCharacterDataLoc.Count - 1)
             {
                 _chosenCharacterNum += 1;
+                ui.moveCharacterLeft();
             } else
             {
                 _chosenCharacterNum = 0;
+                ui.moveCharacterToStart();
             }
         }
         else if (_state == StateType.characterChosen)
@@ -124,10 +132,12 @@ public class AssignWork : MonoBehaviour
             if (_chosenCharacterNum > 0)
             {
                 _chosenCharacterNum -= 1;
+                ui.moveCharacterRight();
             }
             else
             {
                 _chosenCharacterNum = _copyCharacterDataLoc.Count- 1;
+                ui.moveCharacterToEnd();
             }
         }
         else if (_state == StateType.characterChosen)
@@ -175,8 +185,9 @@ public class AssignWork : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (Input.GetKeyDown(KeyCode.Z) && _totalWorkNum > 0 && _copyCharacterDataLoc.Count > 0)
         {
+            Debug.Log("Z눌림");
             switchStateByZ();
         }
         else if (Input.GetKeyDown(KeyCode.X))
