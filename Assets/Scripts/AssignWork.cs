@@ -39,6 +39,7 @@ public class AssignWork : MonoBehaviour
     public void assignWorkToCharacter()
     {
         WorkData result = workControl.popWork(_chosenWorkNum);
+        ui.popWork(_chosenWorkNum);
         characterControl.setAssignment(_copyCharacterDataLoc[_chosenCharacterNum], result.workName, result.workAmount);
         ui.beWorkingCharacterUI(_copyCharacterDataLoc[_chosenCharacterNum]);
         _copyCharacterDataLoc.RemoveAt(_chosenCharacterNum);
@@ -187,7 +188,6 @@ public class AssignWork : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Z) && _totalWorkNum > 0 && _copyCharacterDataLoc.Count > 0)
         {
-            Debug.Log("Z눌림");
             switchStateByZ();
         }
         else if (Input.GetKeyDown(KeyCode.X))

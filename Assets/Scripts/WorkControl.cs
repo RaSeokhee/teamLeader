@@ -6,6 +6,7 @@ public class WorkData
 {
     public string workName = "";
     public int workAmount = 0;
+
 }
 
 public class WorkControl : MonoBehaviour
