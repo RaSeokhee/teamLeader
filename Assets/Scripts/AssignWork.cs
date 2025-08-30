@@ -32,7 +32,7 @@ public class AssignWork : MonoBehaviour
 
     public void addCompletedCharacter(int n)
     {
-        //_copyCharacterDataLoc.Insert(n, n);
+        
         _copyCharacterDataLoc.Add(n);
     }
 
@@ -43,8 +43,11 @@ public class AssignWork : MonoBehaviour
         characterControl.setAssignment(_copyCharacterDataLoc[_chosenCharacterNum], result.workName, result.workAmount);
         ui.beWorkingCharacterUI(_copyCharacterDataLoc[_chosenCharacterNum]);
         _copyCharacterDataLoc.RemoveAt(_chosenCharacterNum);
-        //Debug.Log(_chosenCharacterNum + " " + _copyCharacterDataLoc[_chosenCharacterNum]);
+        //Debug.Log(AssignWork: _chosenCharacterNum + " " + _copyCharacterDataLoc[_chosenCharacterNum]);
     }
+
+    public int getChosenCharacterNum() { return _chosenCharacterNum; }
+
 
     private void switchStateByZ()
     {
@@ -52,6 +55,7 @@ public class AssignWork : MonoBehaviour
         {
             case StateType.nothingChosen:
                 _state = StateType.characterChosen;
+                ui.hightlightTask(0);
                 break;
             case StateType.characterChosen:
                 assignWorkToCharacter();
@@ -63,6 +67,9 @@ public class AssignWork : MonoBehaviour
                 }
                 
                 _chosenWorkNum = 0;
+                ui.noHightLightAnyTask();
+                //Debug.Log($"AssignWork: before error, _chosenCharacterNum: {_chosenCharacterNum}, _copyCharacterDataLoc: {string.Join(", ", _copyCharacterDataLoc)} ");
+
                 break;
             default:
                 break;
@@ -78,6 +85,7 @@ public class AssignWork : MonoBehaviour
             case StateType.characterChosen:
                 _state = StateType.nothingChosen;
                 _chosenWorkNum = 0;
+                ui.noHightLightAnyTask();
                 break;
             default:
                 break;
@@ -97,6 +105,7 @@ public class AssignWork : MonoBehaviour
                 _chosenCharacterNum = 0;
                 ui.moveCharacterToStart();
             }
+
         }
         else if (_state == StateType.characterChosen)
         {
@@ -122,7 +131,9 @@ public class AssignWork : MonoBehaviour
                     _chosenWorkNum = 0;
                 }
             }
-            
+            ui.hightlightTask(_chosenWorkNum);
+
+
         }
     }
 
@@ -140,6 +151,7 @@ public class AssignWork : MonoBehaviour
                 _chosenCharacterNum = _copyCharacterDataLoc.Count- 1;
                 ui.moveCharacterToEnd();
             }
+            
         }
         else if (_state == StateType.characterChosen)
         {
@@ -165,6 +177,7 @@ public class AssignWork : MonoBehaviour
                     _chosenWorkNum = _totalWorkNum - 1;
                 }
             }
+            ui.hightlightTask(_chosenWorkNum);
         }
     }
 
@@ -181,11 +194,15 @@ public class AssignWork : MonoBehaviour
             _copyCharacterDataLoc.Add(i);
         }
         
+        
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+        //Debug.Log($"AssignWork: _chosenCharacterNum: {_chosenCharacterNum}, _copyCharacterDataLoc: {string.Join(", ", _copyCharacterDataLoc)} ");
         if (Input.GetKeyDown(KeyCode.Z) && _totalWorkNum > 0 && _copyCharacterDataLoc.Count > 0)
         {
             switchStateByZ();
@@ -195,10 +212,10 @@ public class AssignWork : MonoBehaviour
             switchStateByX();
         }
         
-        if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.RightArrow))
+        if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.RightArrow))
         {
             PlusCharacterOrTask();
-        } else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.LeftArrow))
+        } else if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
             MinusCharacterOrTask();
         }
@@ -206,8 +223,8 @@ public class AssignWork : MonoBehaviour
 
         _totalWorkNum = workControl.getLeftWork();
 
-        //Debug.Log("현재 state: " + _state + " 현재 선택 캐릭: " + _chosenCharacterNum + " 현재 선택 업무: " + _chosenWorkNum);
-        //Debug.Log("_copyCharacterDataLoc: " + string.Join(", ", _copyCharacterDataLoc));
-        
+        //Debug.Log("AssignWork: 현재 state: " + _state + " 현재 선택 캐릭: " + _chosenCharacterNum + " 현재 선택 업무: " + _chosenWorkNum);
+        //Debug.Log("AssignWork: _copyCharacterDataLoc: " + string.Join(", ", _copyCharacterDataLoc));
+
     }
 }
