@@ -69,6 +69,16 @@ public class UI : MonoBehaviour
     private float _workEndTextMoveTime = 0.2f; //the smaller, the faster
     private int _totalWorkEndCount = 0;
 
+    //CharacterDotBar UI
+    public GameObject[] _characaterDotSprites;
+    private List<float> _visibleDotGoalXpos = new List<float>();
+    private int _previousChosenDot = -1;
+
+    private float _basicDotScale = 0.2f;
+    private float _bigDotSclae = 0.3f;
+    private float _characterDotSpacing = 1f;
+    private float _basicCharacterDotXpos = 12f;
+    private float _basicCharacterDotYpos = 4f;
 
     //WorkEndAlarm function
     private void _addWorkEndCharacterToList(int charNum)
@@ -139,16 +149,29 @@ public class UI : MonoBehaviour
             moveCharacterToStart();
             _visibleCharacterGoalXpos.RemoveAt(_visibleCharacterGoalXpos.Count - 1);
             moveCharacterOutsideScreen(i);
+
+            //Character Dot Bar UI
+            _visibleDotGoalXpos.RemoveAt(_visibleDotGoalXpos.Count -1);
+            moveDotOutsideScreen(i);
         } else
         {
             _visibleCharacterGoalXpos.RemoveAt(_visibleCharacterGoalXpos.Count - 1);
             moveCharacterOutsideScreen(i);
+
+            //Character Dot Bar UI
+            _visibleDotGoalXpos.RemoveAt(_visibleDotGoalXpos.Count - 1);
+            moveDotOutsideScreen(i);
         }
         _visibleCharacterOrder.Remove(i);
-        _visibleWorkingBadgeOrder.Add(i);
         _characterSprites[i].gameObject.SetActive(false);
+        
+        _visibleWorkingBadgeOrder.Add(i);
         _workingBadgeSprites[i].gameObject.SetActive(true);
         
+        if(_visibleCharacterOrder.Count < 1) // if count is zero
+        {
+            _previousChosenDot = -1;
+        }
     }
 
     public void aintWorkingCharacterUI(int i)
@@ -162,10 +185,13 @@ public class UI : MonoBehaviour
         if(_visibleCharacterGoalXpos.Count > 0)
         {
             _visibleCharacterGoalXpos.Add(_visibleCharacterGoalXpos[_visibleCharacterGoalXpos.Count - 1] + _charactersSpacing);
+            _visibleDotGoalXpos.Add(_visibleDotGoalXpos[_visibleDotGoalXpos.Count - 1] + 1f);
         }
         else
         {
             _visibleCharacterGoalXpos.Add(_chosenCharacterXpos);
+            _visibleDotGoalXpos.Add(2f);
+            
         }
         
 
@@ -179,18 +205,32 @@ public class UI : MonoBehaviour
             {
                 int Count = _visibleCharacterOrder.Count;
                 _visibleCharacterGoalXpos.Clear();
+
+                //charater dot UI
+                _visibleDotGoalXpos.Clear();
+
                 for (int i = 0; i < Count; i++)
                 {
                     _visibleCharacterGoalXpos.Add(_chosenCharacterXpos + i * _charactersSpacing);
+
+                    //charater dot UI
+                    _visibleDotGoalXpos.Add(2f + i * 1f);
                 }
+
+            
             }
             else
             {
                 for (int i = 0; i < _visibleCharacterGoalXpos.Count; i++)
                 {
                     _visibleCharacterGoalXpos[i] -= _charactersSpacing;
+
+                    //charater dot UI
+                    _visibleDotGoalXpos[i] -= _characterDotSpacing;
                 }
             }
+
+            
         }
         
     }
@@ -203,9 +243,16 @@ public class UI : MonoBehaviour
             {
                 int Count = _visibleCharacterOrder.Count;
                 _visibleCharacterGoalXpos.Clear();
+
+                //charater dot UI
+                _visibleDotGoalXpos.Clear();
+
                 for (int i = Count; i > 0; i--)
                 {
                     _visibleCharacterGoalXpos.Add(_chosenCharacterXpos - (i-1) * _charactersSpacing);
+
+                    //charater dot UI
+                    _visibleDotGoalXpos.Add(2f - (i - 1) * 1f);
                 }
             }
             else
@@ -213,8 +260,13 @@ public class UI : MonoBehaviour
                 for (int i = 0; i < _visibleCharacterGoalXpos.Count; i++)
                 {
                     _visibleCharacterGoalXpos[i] += _charactersSpacing;
+
+                    //charater dot UI
+                    _visibleDotGoalXpos[i] += _characterDotSpacing;
                 }
             }
+
+            
         }
     }
 
@@ -222,20 +274,38 @@ public class UI : MonoBehaviour
     {
         int count = _visibleCharacterGoalXpos.Count;
         _visibleCharacterGoalXpos.Clear();
+
+        //charater dot UI
+        _visibleDotGoalXpos.Clear();
+
         for (int i = 0; i < count; i++)
         {
             _visibleCharacterGoalXpos.Add(_chosenCharacterXpos + i * _charactersSpacing);
+
+            //charater dot UI
+            _visibleDotGoalXpos.Add(2f + i * 1f);
         }
+
+        
     }
 
     public void moveCharacterToEnd()
     {
         int count = _visibleCharacterGoalXpos.Count;
         _visibleCharacterGoalXpos.Clear();
+
+        //charater dot UI
+        _visibleDotGoalXpos.Clear();
+
         for (int i = count; i > 0; i--)
         {
             _visibleCharacterGoalXpos.Add(_chosenCharacterXpos - (i - 1) * _charactersSpacing);
+
+            //charater dot UI
+            _visibleDotGoalXpos.Add(2f - (i - 1) * 1f);
         }
+
+        
     }
 
     private void moveCharacterOutsideScreen(int spriteNum)
@@ -260,6 +330,34 @@ public class UI : MonoBehaviour
         tf.position = new Vector3(_chosenCharacterXpos, -2.5f, 0f);
     }
 
+    //characterDotBar function
+    private void moveDotOutsideScreen(int dotNum)
+    {
+        Transform tf = _characaterDotSprites[dotNum].transform;
+        tf.position = new Vector3(_basicCharacterDotXpos, _basicCharacterDotYpos, 0f);
+
+        tf.localScale = new Vector3(_basicDotScale, _basicDotScale, 0f);
+    }
+
+    private void highlightDot(int dotNum)
+    {
+        //Debug.Log($"UI: 이전: _previousChosenDot: {_previousChosenDot}");
+        //after plus or minus chosen character number in AssignWork.cs
+        Transform tf;
+
+        if (_previousChosenDot != -1)
+        {
+            tf = _characaterDotSprites[_previousChosenDot].transform;
+            tf.localScale = new Vector3(_basicDotScale, _basicDotScale, 0f);
+        }
+
+        tf = _characaterDotSprites[dotNum].transform;
+        tf.localScale = new Vector3(_bigDotSclae, _bigDotSclae, 0f);
+        _previousChosenDot = dotNum;
+
+        //Debug.Log($"UI: 이후: _previousChosenDot: {_previousChosenDot}");
+    }
+
     //task function
     private void moveTaskOutsideScreenUsing(int spriteNum)
     {
@@ -273,6 +371,8 @@ public class UI : MonoBehaviour
         Transform tf = _taskSprites[spriteNum].transform;
         tf.position = new Vector3(_basicWaitingTaskXpos, _basicTaskYpos - 4 * _tasksSpacing, 0f);
     }
+
+    
 
     public void popWork(int index)
     {
@@ -327,31 +427,35 @@ public class UI : MonoBehaviour
         _previousChosenTaskNum = -1;
     }
 
+    
 
-  
     void Start()
     {
         workControl = workControlObject.GetComponent<WorkControl>();
         characterControl = characterControlObject.GetComponent<CharacterControl>();
         assignWork = assignWorkObject.GetComponent<AssignWork>();
 
-        //character preprocessing.
+        //character, workingBadge, characterDotBar preprocessing.
         int totalcharacterNum = characterControl.getTotalCharacterNum();
 
-        if (_characterSprites.Length != totalcharacterNum || _workingBadgeSprites.Length != totalcharacterNum)
+        if (_characterSprites.Length != totalcharacterNum || _workingBadgeSprites.Length != totalcharacterNum || _characaterDotSprites.Length != totalcharacterNum)
         {
-            Debug.LogWarning("UI: CharacterControl 정보 개수와 캐릭터 스프라이트 개수가 일치하지 않습니다.");
+            Debug.LogWarning("UI: CharacterControl 정보 개수와 캐릭터 관련 스프라이트 개수가 일치하지 않습니다.");
         }
 
-        
+
         for (int i = 0; i < totalcharacterNum; i++)
         {
             _visibleCharacterOrder.Add(i);
             _visibleCharacterGoalXpos.Add(_chosenCharacterXpos + i * _charactersSpacing);
 
             moveCharacterOutsideScreen(i);
+
+            _visibleDotGoalXpos.Add(2f + i * 1f);
+            moveDotOutsideScreen(i);
         }
 
+        highlightDot(0);
 
         //task preprocessing
 
@@ -408,6 +512,9 @@ public class UI : MonoBehaviour
         {
             Debug.LogWarning("UI: _workEndTextList 개수와 _workEndAlarmColor 개수가 일치하지 않습니다.");
         }
+
+
+        
     }
 
     
@@ -484,11 +591,13 @@ public class UI : MonoBehaviour
         _workEndAlarmManage();
 
 
-        //Character and Character Description UI
+        //Character, Dot Bar, Character Description UI
         tmp = _characterDescriptionText.GetComponent<TextMeshPro>();
 
         if (_visibleCharacterOrder.Count > 0)
         {
+            
+
             for (int i = 0; i < _visibleCharacterOrder.Count; i++)
             {
                 Transform tf = _characterSprites[_visibleCharacterOrder[i]].transform;
@@ -497,6 +606,13 @@ public class UI : MonoBehaviour
                 pos.x = Mathf.Lerp(pos.x, _visibleCharacterGoalXpos[i], Time.deltaTime * _characterMoveSpeed);
                 tf.position = pos;
 
+                //Character Dot UI
+                tf = _characaterDotSprites[_visibleCharacterOrder[i]].transform;
+                pos = tf.position;
+                pos.x = Mathf.Lerp(pos.x, _visibleDotGoalXpos[i], Time.deltaTime * _characterMoveSpeed);
+                tf.position = pos;
+
+                highlightDot(_visibleCharacterOrder[assignWork.getChosenCharacterNum()]);
             }
 
             if (tmp != null)
