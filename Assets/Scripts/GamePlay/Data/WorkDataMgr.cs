@@ -9,7 +9,7 @@ public class WorkData
 
 }
 
-public class WorkControl : MonoBehaviour
+public class WorkDataMgr : MonoBehaviour
 {
     
     [SerializeField] private List<WorkData> _works;

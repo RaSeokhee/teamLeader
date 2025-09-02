@@ -10,14 +10,13 @@ public enum StateType
 public class AssignWork : MonoBehaviour
 {
 
-    public GameObject workControlObject;
-    private WorkControl workControl;
+    
 
-    public GameObject characterControlObject;
-    private CharacterControl characterControl;
+    [SerializeField] private CharacterDataMgr characterDataMgr;
+    [SerializeField] private WorkDataMgr workDataMgr;
 
-    public GameObject uiObject;
-    private UI ui;
+    
+    [SerializeField] private CharacterSelectionUi characterSelectionUi;
 
 
     private StateType _state = StateType.nothingChosen;
@@ -38,10 +37,10 @@ public class AssignWork : MonoBehaviour
 
     public void assignWorkToCharacter()
     {
-        WorkData result = workControl.popWork(_chosenWorkNum);
-        ui.popWork(_chosenWorkNum);
-        characterControl.setAssignment(_copyCharacterDataLoc[_chosenCharacterNum], result.workName, result.workAmount);
-        ui.beWorkingCharacterUI(_copyCharacterDataLoc[_chosenCharacterNum]);
+        WorkData result = workDataMgr.popWork(_chosenWorkNum);
+        characterSelectionUi.popWork(_chosenWorkNum);
+        characterDataMgr.setAssignment(_copyCharacterDataLoc[_chosenCharacterNum], result.workName, result.workAmount);
+        characterSelectionUi.beWorkingCharacterUI(_copyCharacterDataLoc[_chosenCharacterNum]);
         _copyCharacterDataLoc.RemoveAt(_chosenCharacterNum);
         //Debug.Log(AssignWork: _chosenCharacterNum + " " + _copyCharacterDataLoc[_chosenCharacterNum]);
     }
@@ -55,7 +54,7 @@ public class AssignWork : MonoBehaviour
         {
             case StateType.nothingChosen:
                 _state = StateType.characterChosen;
-                ui.hightlightTask(0);
+                characterSelectionUi.hightlightTask(0);
                 break;
             case StateType.characterChosen:
                 assignWorkToCharacter();
@@ -67,7 +66,7 @@ public class AssignWork : MonoBehaviour
                 }
                 
                 _chosenWorkNum = 0;
-                ui.noHightLightAnyTask();
+                characterSelectionUi.noHightLightAnyTask();
                 //Debug.Log($"AssignWork: before error, _chosenCharacterNum: {_chosenCharacterNum}, _copyCharacterDataLoc: {string.Join(", ", _copyCharacterDataLoc)} ");
 
                 break;
@@ -85,7 +84,7 @@ public class AssignWork : MonoBehaviour
             case StateType.characterChosen:
                 _state = StateType.nothingChosen;
                 _chosenWorkNum = 0;
-                ui.noHightLightAnyTask();
+                characterSelectionUi.noHightLightAnyTask();
                 break;
             default:
                 break;
@@ -99,11 +98,11 @@ public class AssignWork : MonoBehaviour
             if(_chosenCharacterNum < _copyCharacterDataLoc.Count - 1)
             {
                 _chosenCharacterNum += 1;
-                ui.moveCharacterLeft();
+                characterSelectionUi.moveCharacterLeft();
             } else
             {
                 _chosenCharacterNum = 0;
-                ui.moveCharacterToStart();
+                characterSelectionUi.moveCharacterToStart();
             }
 
         }
@@ -131,7 +130,7 @@ public class AssignWork : MonoBehaviour
                     _chosenWorkNum = 0;
                 }
             }
-            ui.hightlightTask(_chosenWorkNum);
+            characterSelectionUi.hightlightTask(_chosenWorkNum);
 
 
         }
@@ -144,12 +143,12 @@ public class AssignWork : MonoBehaviour
             if (_chosenCharacterNum > 0)
             {
                 _chosenCharacterNum -= 1;
-                ui.moveCharacterRight();
+                characterSelectionUi.moveCharacterRight();
             }
             else
             {
                 _chosenCharacterNum = _copyCharacterDataLoc.Count- 1;
-                ui.moveCharacterToEnd();
+                characterSelectionUi.moveCharacterToEnd();
             }
             
         }
@@ -177,7 +176,7 @@ public class AssignWork : MonoBehaviour
                     _chosenWorkNum = _totalWorkNum - 1;
                 }
             }
-            ui.hightlightTask(_chosenWorkNum);
+            characterSelectionUi.hightlightTask(_chosenWorkNum);
         }
     }
 
@@ -185,11 +184,10 @@ public class AssignWork : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        workControl = workControlObject.GetComponent<WorkControl>();
-        characterControl = characterControlObject.GetComponent<CharacterControl>();
-        ui = uiObject.GetComponent<UI>();
 
-        for (int i = 0; i < characterControl.getTotalCharacterNum(); i++)
+        
+
+        for (int i = 0; i < characterDataMgr.getTotalCharacterNum(); i++)
         {
             _copyCharacterDataLoc.Add(i);
         }
@@ -221,7 +219,7 @@ public class AssignWork : MonoBehaviour
         }
 
 
-        _totalWorkNum = workControl.getLeftWork();
+        _totalWorkNum = workDataMgr.getLeftWork();
 
         //Debug.Log("AssignWork: 현재 state: " + _state + " 현재 선택 캐릭: " + _chosenCharacterNum + " 현재 선택 업무: " + _chosenWorkNum);
         //Debug.Log("AssignWork: _copyCharacterDataLoc: " + string.Join(", ", _copyCharacterDataLoc));

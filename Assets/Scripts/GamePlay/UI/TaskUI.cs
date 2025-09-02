@@ -4,19 +4,17 @@ using TMPro;
 using System.Collections;
 
 
-public class TaskUI : MonoBehaviour
+public class TaskUi : MonoBehaviour
 {
-    //Task UI
-    public GameObject workControlObject;
-    private WorkControl workControl;
-    private List<WorkData> _works;
 
-    public GameObject[] _taskSprites;
+    [SerializeField] private WorkDataMgr workDataMgr;
+    [SerializeField] private GameObject[] _taskSprites;
 
     private List<float> _taskGoalXpos = new List<float>();
     private List<float> _taskGoalYpos = new List<float>();
     private List<int> _usingTaskOrder = new List<int>();
     private List<int> _waitingTaskOrder = new List<int>();
+    private List<WorkData> _works;
 
     private float _basicTaskXpos = -7f;
     private float _basicTaskYpos = 4f;
@@ -29,14 +27,12 @@ public class TaskUI : MonoBehaviour
     private int _previousChosenTaskNum = -1;
     private float _chosenTaskMoveDistance = 0.6f;
 
-    //task function
-    
 
     public void popWork(int index)
     {
         if (index < 0 || index > _usingTaskOrder.Count - 1)
         {
-            Debug.LogError($"TaskUI: popWork에 잘못된 index값이 주어짐. 주어진 값: {index}");
+            Debug.LogWarning($"TaskUi: popWork에 잘못된 index값이 주어짐. 주어진 값: {index}");
         }
 
         Transform tf = _taskSprites[_usingTaskOrder[index]].transform;
@@ -101,11 +97,10 @@ public class TaskUI : MonoBehaviour
 
     void Start()
     {
-        workControl = workControlObject.GetComponent<WorkControl>();
-
+   
         if (_totalTaskSprites != _taskSprites.Length)
         {
-            Debug.LogError("TaskUI: 등록된 task sprites 개수와 변수에 담긴 스프라이트 개수가 일치하지 않습니다.");
+            Debug.LogWarning("TaskUI: 등록된 task sprites 개수와 변수에 담긴 스프라이트 개수가 일치하지 않습니다.");
         }
 
 
@@ -116,7 +111,7 @@ public class TaskUI : MonoBehaviour
 
         }
 
-        _works = workControl.getWorkData();
+        _works = workDataMgr.getWorkData();
 
         int totalWork = _works.Count;
         for (int i = 0; i < _totalTaskSprites; i++) // apply to all sprites
@@ -149,8 +144,6 @@ public class TaskUI : MonoBehaviour
 
     void Update()
     {
-        //task UI
-
         //apply to using task sprites, move  current Ypos to goal Ypos
         if (_usingTaskOrder.Count > 0)
         {
@@ -164,8 +157,7 @@ public class TaskUI : MonoBehaviour
 
             }
         }
-        //Debug.Log($"TaskUI: _usingTaskOrder: {string.Join(", ", _usingTaskOrder)}, _waitingTaskOrder: {string.Join(", ", _waitingTaskOrder)}");
-
+        
         //apply to all sprites, move current Xpos to goal Xpos
         for (int i = 0; i < _taskGoalXpos.Count; i++)
         {
@@ -175,13 +167,11 @@ public class TaskUI : MonoBehaviour
             pos.x = Mathf.Lerp(pos.x, _taskGoalXpos[i], Time.deltaTime * _taskMoveSpeed);
             tf.position = pos;
         }
-        //Debug.Log($"TaskUI: _taskGoalXpos: {string.Join(", ", _taskGoalXpos)}");
-        //Debug.Log($"TaskUI: _taskGoalYpos: {string.Join(", ", _taskGoalYpos)}");
-
+        
         TextMeshPro tmp;
 
         //refill left work
-        int totalWork = workControl.getLeftWork();
+        int totalWork = workDataMgr.getLeftWork();
         if (_waitingTaskOrder.Count > 0 && _usingTaskOrder.Count < totalWork && _usingTaskOrder.Count < _totalTaskSpritesPerScreen)
         {
 

@@ -3,24 +3,23 @@ using System.Collections.Generic;
 using TMPro;
 using System.Collections;
 
-public class WorkEndAlarmUI : MonoBehaviour
+public class WorkEndAlarmUi : MonoBehaviour
 {
-    public GameObject characterControlObject;
-    private CharacterControl characterControl;
+    [SerializeField] private CharacterDataMgr characterDataMgr;
+    [SerializeField] private GameObject _workEndAlarmText;
 
-    //WorkEndAlarm UI
-    public GameObject _workEndAlarmText;
     private List<string> _workEndTextList = new List<string> { "\n", "\n ", "\n", "\n", "\n" };
     private string[] _workEndAlarmColor = { "#E6FFE6", "#B3FFB3", "#00FF00", "#009900", "#004400" };
+    private List<CharacterData> _characters;
+
     private string _workEndText = "";
     private int _textShouldMoveCount = 0;
     private float _timer = 0f;
     private bool _isFirstEndCharacter = false;
     private float _workEndTextMoveTime = 0.2f; //the smaller, the faster
     private int _totalWorkEndCount = 0;
-    private List<CharacterData> _characters;
+    
 
-    //WorkEndAlarm function
     public void _addWorkEndCharacterToList(int charNum)
     {
         if (_textShouldMoveCount == 0)
@@ -85,21 +84,18 @@ public class WorkEndAlarmUI : MonoBehaviour
 
     void Start()
     {
-        characterControl = characterControlObject.GetComponent<CharacterControl>();
-
         if (_workEndTextList.Count != _workEndAlarmColor.Length)
         {
             Debug.LogWarning("WorkEndAlarmUI: _workEndTextList 개수와 _workEndAlarmColor 개수가 일치하지 않습니다.");
         }
 
-        _characters = characterControl.getCharacterData();
+        _characters = characterDataMgr.getCharacterData();
         _totalWorkEndCount = _workEndTextList.Count;
     }
 
     
     void Update()
     {
-        //workEndAlarm manage
         _workEndAlarmManage();
     }
 }

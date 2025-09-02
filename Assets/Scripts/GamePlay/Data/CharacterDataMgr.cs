@@ -42,14 +42,11 @@ public class WorkingCharacterData
     public void minusAmountWithSpeed() { workAmount -= workSpeed; }
 }
 
-public class CharacterControl : MonoBehaviour
+public class CharacterDataMgr : MonoBehaviour
 {
+    [SerializeField] private AssignWork assignWork;
 
-    public GameObject AssignWorkObject;
-    private AssignWork assignWork;
-
-    public GameObject uiObject;
-    private UI ui;
+    [SerializeField] private CharacterSelectionUi characterSelectionUi;
 
     private float _timer = 0f;
 
@@ -59,6 +56,11 @@ public class CharacterControl : MonoBehaviour
     public List<CharacterData> getCharacterData()
     {
         return _characters;
+    }
+
+    public List<WorkingCharacterData> getWorkingCharacterData()
+    {
+        return _workingCharacters;
     }
 
     public int getTotalCharacterNum()
@@ -85,15 +87,12 @@ public class CharacterControl : MonoBehaviour
         _workingCharacters.Add(newChar);
     }
 
-    public List<WorkingCharacterData> getWorkingCharacterData()
-    {
-        return _workingCharacters;
-    }
+    
 
     void Start()
     {
-        assignWork = AssignWorkObject.GetComponent<AssignWork>();
-        ui = uiObject.GetComponent<UI>();
+       
+        
 
         for (int i = 0; i < _characters.Count; i++)
         {
@@ -138,7 +137,7 @@ public class CharacterControl : MonoBehaviour
                         _characters[_workingCharacters[i].getDataLoc()].setIsWork(true);
                         _characters[_workingCharacters[i].getDataLoc()].plusCompletedWork();
                         assignWork.addCompletedCharacter(_workingCharacters[i].getDataLoc());
-                        ui.aintWorkingCharacterUI(_workingCharacters[i].getDataLoc());
+                        characterSelectionUi.aintWorkingCharacterUI(_workingCharacters[i].getDataLoc());
                         _workingCharacters.RemoveAt(i);
                     }
                 }
