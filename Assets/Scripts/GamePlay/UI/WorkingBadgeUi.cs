@@ -5,7 +5,6 @@ using System.Collections;
 
 public class WorkingBadgeUi : MonoBehaviour
 {
-
     [SerializeField] private CharacterDataMgr characterDataMgr;
     [SerializeField] private GameObject[] _workingBadgeSprites; 
     private List<int> _visibleWorkingBadgeOrder = new List<int>();
@@ -15,8 +14,25 @@ public class WorkingBadgeUi : MonoBehaviour
     private float _workingBadgesSpacing = 2f;
     private float _basicWorkingBadgeXposOutScreen = 12.5f;
 
-    public void addVisibleWorkingBadgeOrder(int badgeNum) { _visibleWorkingBadgeOrder.Add(badgeNum); }
-    public void removeVisibleWorkingBadgeOrder(int badgeNum) { _visibleWorkingBadgeOrder.Remove(badgeNum); }
+    [SerializeField] private GameObject progressBarPrefab;
+    private List<GameObject> _visibleProgressBar = new List<GameObject>();
+
+    public void addVisibleWorkingBadgeAndProgressBar(int badgeNum, int workAmount, int workSpeed) 
+    { 
+        _visibleWorkingBadgeOrder.Add(badgeNum); 
+        GameObject bar = Instantiate(progressBarPrefab);
+        ProgressBarUi barScript = bar.GetComponent<ProgressBarUi>();
+        barScript.setWorkAmountAndSpeed(workAmount, workSpeed);
+        _visibleProgressBar.Add(bar);
+    }
+
+    public void removeVisibleWorkingBadgeOrder(int badgeNum) 
+    {
+        Destroy(_visibleProgressBar[_visibleWorkingBadgeOrder.IndexOf(badgeNum)]);
+        _visibleProgressBar.RemoveAt(_visibleWorkingBadgeOrder.IndexOf(badgeNum));
+        _visibleWorkingBadgeOrder.Remove(badgeNum);
+    }
+
     public void moveWorkingBadgeOutsideScreen(int spriteNum)
     {
         Transform tf = _workingBadgeSprites[spriteNum].transform;
@@ -43,9 +59,14 @@ public class WorkingBadgeUi : MonoBehaviour
 
         for (int i = _visibleWorkingBadgeOrder.Count; i > 0; i--)
         {
-            Transform tf = _workingBadgeSprites[_visibleWorkingBadgeOrder[i - 1]].transform;
+            Transform tf = _workingBadgeSprites[_visibleWorkingBadgeOrder[i-1]].transform;
             tf.position = new Vector3(xPosB, _basicWorkingBadgeYpos, 0f);
+
+            ProgressBarUi barScript = _visibleProgressBar[i-1].GetComponent<ProgressBarUi>();
+            barScript.setOutBarPosX(xPosB);
+
             xPosB -= _workingBadgesSpacing;
+            
         }
     }
 }

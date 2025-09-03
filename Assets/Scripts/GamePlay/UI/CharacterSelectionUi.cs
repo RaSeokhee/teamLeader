@@ -30,7 +30,7 @@ public class CharacterSelectionUi : MonoBehaviour
 
     //WorkingBadge UI
     [SerializeField] private WorkingBadgeUi workingBadgeUi;
-    private void addVisibleWorkingBadgeOrder(int badgeNum) { workingBadgeUi.addVisibleWorkingBadgeOrder(badgeNum); }
+    private void addVisibleWorkingBadgeAndProgressBar(int badgeNum, int workAmount, int workSpeed) { workingBadgeUi.addVisibleWorkingBadgeAndProgressBar(badgeNum, workAmount, workSpeed); }
     private void removeVisibleWorkingBadgeOrder(int badgeNum) { workingBadgeUi.removeVisibleWorkingBadgeOrder(badgeNum); }
     private void moveWorkingBadgeOutsideScreen(int spriteNum) { workingBadgeUi.moveWorkingBadgeOutsideScreen(spriteNum); }
 
@@ -80,7 +80,7 @@ public class CharacterSelectionUi : MonoBehaviour
 
     
     //character function
-    public void beWorkingCharacterUI(int i)
+    public void beWorkingCharacterUI(int i, int workAmount, int workSpeed)
     {
         if (Mathf.Abs(_chosenCharacterXpos - _visibleCharacterGoalXpos[_visibleCharacterGoalXpos.Count - 1]) < 0.0001f)  
         {
@@ -104,9 +104,10 @@ public class CharacterSelectionUi : MonoBehaviour
         _visibleDotOrder.Remove(i);
         _characterSprites[i].gameObject.SetActive(false);
 
-        addVisibleWorkingBadgeOrder(i);
-        
-        if(_visibleCharacterOrder.Count < 1) // if count is zero
+        addVisibleWorkingBadgeAndProgressBar(i, workAmount, workSpeed);
+
+
+        if (_visibleCharacterOrder.Count < 1) // if count is zero
         {
             _previousChosenDot = -1;
         }

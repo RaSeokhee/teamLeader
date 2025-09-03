@@ -53,6 +53,7 @@ public class CharacterDataMgr : MonoBehaviour
     [SerializeField] private List<CharacterData> _characters;
     private List<WorkingCharacterData> _workingCharacters = new List<WorkingCharacterData>();
 
+
     public List<CharacterData> getCharacterData()
     {
         return _characters;
@@ -68,12 +69,12 @@ public class CharacterDataMgr : MonoBehaviour
         return _characters.Count;
     }
     
-    public void setAssignment(int characterNum, string workName, int workAmount)
+    public int setAssignment(int characterNum, string workName, int workAmount)
     {
         if (characterNum < 0 || characterNum > _characters.Count - 1)
         {
             Debug.Log($"CharacterControl: 잘못된 characterNum이 주어짐. 현재 주어진 값: {characterNum}");
-            return;
+            return -1;
         }
 
         _characters[characterNum].setIsWork(true);
@@ -85,6 +86,8 @@ public class CharacterDataMgr : MonoBehaviour
         newChar.setDataLoc(_characters[characterNum].getDataLoc());
 
         _workingCharacters.Add(newChar);
+
+        return _characters[characterNum].workSpeed / 10;
     }
 
     

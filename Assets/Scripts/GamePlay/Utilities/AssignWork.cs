@@ -39,8 +39,8 @@ public class AssignWork : MonoBehaviour
     {
         WorkData result = workDataMgr.popWork(_chosenWorkNum);
         characterSelectionUi.popWork(_chosenWorkNum);
-        characterDataMgr.setAssignment(_copyCharacterDataLoc[_chosenCharacterNum], result.workName, result.workAmount);
-        characterSelectionUi.beWorkingCharacterUI(_copyCharacterDataLoc[_chosenCharacterNum]);
+        int workSpeed = characterDataMgr.setAssignment(_copyCharacterDataLoc[_chosenCharacterNum], result.workName, result.workAmount);
+        characterSelectionUi.beWorkingCharacterUI(_copyCharacterDataLoc[_chosenCharacterNum], result.workAmount, workSpeed);
         _copyCharacterDataLoc.RemoveAt(_chosenCharacterNum);
         //Debug.Log(AssignWork: _chosenCharacterNum + " " + _copyCharacterDataLoc[_chosenCharacterNum]);
     }
