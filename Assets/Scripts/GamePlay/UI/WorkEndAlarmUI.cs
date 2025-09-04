@@ -26,7 +26,7 @@ public class WorkEndAlarmUi : MonoBehaviour
         {
             _isFirstEndCharacter = true;
         }
-        _workEndTextList.Add($"+ {_characters[charNum].characterName}\n");
+        _workEndTextList.Add($"+ {_characters[charNum].getCharacterName()}\n");
         _textShouldMoveCount = _workEndTextList.Count;
     }
 

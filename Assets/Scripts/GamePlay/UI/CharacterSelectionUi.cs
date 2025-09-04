@@ -39,7 +39,9 @@ public class CharacterSelectionUi : MonoBehaviour
     private List<CharacterData> _characters;
 
     //CharacterDotBar UI
-    [SerializeField] private GameObject[] _characaterDotSprites;
+    [SerializeField] private GameObject _dotBarDotPrefab;
+    [SerializeField] private GameObject _dotBarParent;
+    private List<GameObject> _characaterDotSprites = new List<GameObject>();
     private List<float> _visibleDotGoalXpos = new List<float>();
     private int _previousChosenDot = -1;
 
@@ -264,19 +266,26 @@ public class CharacterSelectionUi : MonoBehaviour
         tf.position = new Vector3(_chosenCharacterXpos, -2.5f, 0f);
     }
 
-   
+    
 
     void Start()
     {
         _characters = characterDataMgr.getCharacterData();
         int totalcharacterNum = characterDataMgr.getTotalCharacterNum();
 
+        for (int i = 0; i < totalcharacterNum; i++)
+        {
+            GameObject obj = Instantiate(_dotBarDotPrefab); 
+            obj.transform.SetParent(_dotBarParent.transform);
+            _characaterDotSprites.Add(obj);
+        }
+
         if (_characterSprites.Length != totalcharacterNum)
         {
             Debug.LogWarning("UI: CharacterControl 정보 개수와 캐릭터 관련 스프라이트 개수가 일치하지 않습니다.");
         }
 
-        if (_characaterDotSprites.Length != totalcharacterNum)
+        if (_characaterDotSprites.Count != totalcharacterNum)
         {
             Debug.LogWarning("CharacterDotBarUI: CharacterControl 정보 개수와 dot bar 스프라이트 개수가 일치하지 않습니다.");
         }
@@ -326,7 +335,7 @@ public class CharacterSelectionUi : MonoBehaviour
 
             if (tmp != null)
             {
-                tmp.text = _characters[_visibleCharacterOrder[assignWork.getChosenCharacterNum()]].characterName;
+                tmp.text = _characters[_visibleCharacterOrder[assignWork.getChosenCharacterNum()]].getCharacterName();
             }
 
         } else

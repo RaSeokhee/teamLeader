@@ -5,38 +5,30 @@ using System.Collections.Generic;
 [System.Serializable]
 public class CharacterData
 {
-    public string characterName = "";
-    public int workSpeed = 0;
-    private bool isWork = false;
+    [SerializeField] private string characterName = "";
+    [SerializeField] private int workSpeed = 0;
+    private string workName = "";
+    private int workAmount = 0;
     private int completedWork = 0;
     private int dataLoc = 0;
 
-    public void setIsWork(bool b) { isWork = b; }
-    public void plusCompletedWork() { completedWork += 1; }
-    public void setDataLoc(int n) { dataLoc = n; }
-    public int getDataLoc() { return dataLoc; }
-}
-
-public class WorkingCharacterData
-{
-    private string characterName = "";
-    private int workSpeed = 0;
-    private string workName = "";
-    private int workAmount = 0;
-    private int dataLoc = 0;
-
     public void setCharacterName(string s) { characterName = s; }
-    public string getCharacterName() {  return characterName; }
+    public string getCharacterName() { return characterName; }
 
-    public void setWorkName(string s) { workName = s; }
-
-    public void setWorkSpeed(int n) { workSpeed = n; }
+    public void setWorkSpeed(int i) { workSpeed = i; }
     public int getWorkSpeed() { return workSpeed; }
 
-    public void setWorkAmount(int n) { workAmount = n; }
+    public void setWorkName(string s) {workName = s; }
+    public string getWorkName() { return workName; }
+
+    public void setWorkAmount(int i) { workAmount = i; }
     public int getWorkAmount() { return workAmount; }
 
-    public void setDataLoc(int n) { dataLoc = n; }
+    public void plusCompletedWork() { completedWork += 1; }
+    public void setCompletedWork(int i) { completedWork = i; }
+    public int getCompletedWork() { return completedWork; }
+
+    public void setDataLoc(int i) { dataLoc = i; }
     public int getDataLoc() { return dataLoc; }
 
     public void minusAmountWithSpeed() { workAmount -= workSpeed; }
@@ -51,17 +43,11 @@ public class CharacterDataMgr : MonoBehaviour
     private float _timer = 0f;
 
     [SerializeField] private List<CharacterData> _characters;
-    private List<WorkingCharacterData> _workingCharacters = new List<WorkingCharacterData>();
-
+    private List<CharacterData> _workingCharacters = new List<CharacterData>();
 
     public List<CharacterData> getCharacterData()
     {
         return _characters;
-    }
-
-    public List<WorkingCharacterData> getWorkingCharacterData()
-    {
-        return _workingCharacters;
     }
 
     public int getTotalCharacterNum()
@@ -77,17 +63,18 @@ public class CharacterDataMgr : MonoBehaviour
             return -1;
         }
 
-        _characters[characterNum].setIsWork(true);
-        WorkingCharacterData newChar = new WorkingCharacterData();
-        newChar.setCharacterName(_characters[characterNum].characterName);
-        newChar.setWorkSpeed(_characters[characterNum].workSpeed / 10);
+        _characters[characterNum].setWorkName(workName);
+        _characters[characterNum].setWorkAmount(workAmount);
+
+        CharacterData newChar = new CharacterData();
+        newChar.setCharacterName(_characters[characterNum].getCharacterName());
+        newChar.setWorkSpeed(_characters[characterNum].getWorkSpeed() / 10);
         newChar.setWorkName(workName);
         newChar.setWorkAmount(workAmount);
         newChar.setDataLoc(_characters[characterNum].getDataLoc());
-
         _workingCharacters.Add(newChar);
 
-        return _characters[characterNum].workSpeed / 10;
+        return _characters[characterNum].getWorkSpeed() / 10;
     }
 
     
@@ -99,21 +86,22 @@ public class CharacterDataMgr : MonoBehaviour
 
         for (int i = 0; i < _characters.Count; i++)
         {
-            if (_characters[i].workSpeed <= 0 || _characters[i].workSpeed > 100)
+            if (_characters[i].getWorkSpeed() <= 0 || _characters[i].getWorkSpeed() > 100)
             {
-                Debug.Log($"CharacterControl: 캐릭터의 workSpeed 값은 0 초과 100 이하여야 합니다.현재 주어진 값: {_characters[i].workSpeed}");
-                _characters[i].workSpeed = 50;
+                Debug.Log($"CharacterControl: 캐릭터의 workSpeed 값은 0 초과 100 이하여야 합니다.현재 주어진 값: {_characters[i].getWorkSpeed()}");
+                _characters[i].setWorkSpeed(50);
             }
 
-            if (string.IsNullOrEmpty(_characters[i].characterName))
+            if (string.IsNullOrEmpty(_characters[i].getCharacterName()))
             {
                 Debug.Log($"CharacterControl: 캐릭터의 characterName 값이 주어지지 않았습니다. 임시로 값 저장함");
-                _characters[i].characterName = "temp";
+                _characters[i].setCharacterName("temp");
             }
 
             _characters[i].setDataLoc(i);
         }
 
+        
         
     }
 
@@ -136,9 +124,9 @@ public class CharacterDataMgr : MonoBehaviour
                     }
                     else
                     {
-
-                        _characters[_workingCharacters[i].getDataLoc()].setIsWork(true);
                         _characters[_workingCharacters[i].getDataLoc()].plusCompletedWork();
+                        _characters[_workingCharacters[i].getDataLoc()].setWorkName("");
+                        _characters[_workingCharacters[i].getDataLoc()].setWorkAmount(0);
                         assignWork.addCompletedCharacter(_workingCharacters[i].getDataLoc());
                         characterSelectionUi.aintWorkingCharacterUI(_workingCharacters[i].getDataLoc());
                         _workingCharacters.RemoveAt(i);

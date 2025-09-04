@@ -8,7 +8,9 @@ public class TaskUi : MonoBehaviour
 {
 
     [SerializeField] private WorkDataMgr workDataMgr;
-    [SerializeField] private GameObject[] _taskSprites;
+    [SerializeField] private GameObject _taskPrefab;
+    [SerializeField] private GameObject _tasksParent;
+    private List<GameObject> _taskSprites = new List<GameObject>();
 
     private List<float> _taskGoalXpos = new List<float>();
     private List<float> _taskGoalYpos = new List<float>();
@@ -94,11 +96,21 @@ public class TaskUi : MonoBehaviour
         _taskGoalXpos[taskNum] = _basicTaskXpos;
     }
 
+    void Awake()
+    {
+        for (int i = 0; i < _totalTaskSprites; i++)
+        {
+            GameObject obj = Instantiate(_taskPrefab);
+            obj.transform.SetParent(_tasksParent.transform);
+            _taskSprites.Add(obj);
+        }
+    }
 
     void Start()
     {
-   
-        if (_totalTaskSprites != _taskSprites.Length)
+        
+
+        if (_totalTaskSprites != _taskSprites.Count)
         {
             Debug.LogWarning("TaskUI: 등록된 task sprites 개수와 변수에 담긴 스프라이트 개수가 일치하지 않습니다.");
         }
